@@ -47,6 +47,13 @@
   .hdr-meta b{color:var(--amber); font-weight:600;}
   .hdr-sub{font-size:11px; color:var(--sand); opacity:0.65; margin-top:4px; letter-spacing:0.02em;}
 
+  #operator-bar{display:flex; justify-content:space-between; align-items:center; padding:9px 16px; border-bottom:1px solid var(--line); font-size:10.5px; letter-spacing:0.04em; position:sticky; top:70px; z-index:19; background:rgba(11,13,9,0.96);}
+  #operator-status{color:var(--sand);}
+  #operator-status b{color:var(--amber);}
+  #operator-status .badge{background:var(--amber); color:var(--void); font-size:8.5px; padding:1px 5px; border-radius:2px; margin-left:6px; letter-spacing:0.05em; font-weight:700;}
+  #logout-btn{background:none; border:none; color:var(--amber-dim); font-family:'JetBrains Mono',monospace; font-size:10.5px; cursor:pointer; letter-spacing:0.05em; text-decoration:underline; padding:4px;}
+  #logout-btn:hover{color:var(--amber);}
+
   /* ===== MODE SWITCH ===== */
   .switch{
     display:flex; margin:16px 16px 0; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
@@ -64,6 +71,34 @@
   .view{display:none; animation:fadein .25s ease;}
   .view.active{display:block;}
   @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ===== AUTH GATE ===== */
+  .auth-wrap{max-width:420px; margin:50px auto; padding:0 20px;}
+  .auth-logo{text-align:center; margin-bottom:26px;}
+  .auth-logo h1{font-size:22px; color:var(--bone); letter-spacing:0.06em;}
+  .auth-logo h1 span{color:var(--amber);}
+  .auth-logo p{font-size:11px; color:var(--amber-dim); letter-spacing:0.05em; margin-top:6px;}
+  .auth-card{border:1px solid var(--line); background:var(--panel); padding:20px 18px; border-radius:var(--radius);}
+  .auth-card h2{font-size:16px; color:var(--bone); margin-bottom:16px;}
+  .auth-btn{
+    display:block; width:100%; background:var(--void); border:1px solid var(--line); color:var(--sand);
+    padding:14px; margin-bottom:10px; font-family:'Oswald',sans-serif; letter-spacing:0.06em;
+    text-transform:uppercase; font-size:13px; cursor:pointer; border-radius:var(--radius); transition:all .15s ease;
+  }
+  .auth-btn:hover{border-color:var(--amber); color:var(--bone); background:var(--panel2);}
+  .auth-btn.primary{background:var(--amber); border-color:var(--amber); color:var(--void); font-weight:600;}
+  .auth-btn.primary:hover{background:#ff9f3d;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:10px; color:var(--amber-dim); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:5px;}
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--void); border:1px solid var(--line); color:var(--bone);
+    padding:11px 12px; font-family:'JetBrains Mono',monospace; font-size:13px; border-radius:var(--radius);
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{outline:none; border-color:var(--amber);}
+  .field textarea{resize:vertical; min-height:70px;}
+  .auth-error{color:var(--alert); font-size:11px; margin:6px 0 10px; min-height:14px;}
+  .auth-screen{display:none;}
+  .auth-note{font-size:10px; color:var(--sand); opacity:0.55; line-height:1.5; margin-top:14px; text-align:center;}
 
   /* ===== QUIZ ===== */
   .progress{display:flex; gap:4px; margin:20px 0 6px;}
@@ -112,6 +147,7 @@
   .tag-card .cat{font-size:9px; color:var(--amber-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;}
   .tag-card .name{font-family:'Oswald',sans-serif; font-size:15px; color:var(--bone); font-weight:600; margin-bottom:6px; letter-spacing:0.02em;}
   .tag-card .blurb{font-size:10.5px; color:var(--sand); opacity:0.75; line-height:1.4;}
+  .tag-card .favmark{position:absolute; top:8px; left:10px; color:var(--amber); font-size:12px;}
 
   /* ===== REQUISITION SLIP (result) ===== */
   .slip{
@@ -143,11 +179,97 @@
     font-size:12px; cursor:pointer; border-radius:var(--radius);
   }
   .restart:hover{border-color:var(--amber); background:var(--panel2);}
+  .fav-btn{
+    background:transparent; border:1px solid var(--amber-dim); color:var(--amber); padding:9px 12px;
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; border-radius:var(--radius); cursor:pointer;
+    margin-top:14px; letter-spacing:0.03em; width:100%;
+  }
+  .fav-btn.active{background:var(--amber); color:var(--void); border-color:var(--amber); font-weight:600;}
+
+  /* ===== ADMIN ===== */
+  .admin-section{border:1px solid var(--line); background:var(--panel); padding:16px; border-radius:var(--radius); margin-bottom:18px;}
+  .admin-section h3{color:var(--bone); font-size:15px; margin-bottom:4px;}
+  .admin-hint{font-size:10.5px; color:var(--sand); opacity:0.6; line-height:1.5; margin-bottom:14px;}
+  .admin-list-row{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line); font-size:12px; gap:10px;}
+  .admin-list-row:last-child{border-bottom:none;}
+  .admin-list-row .an{color:var(--bone); flex:1;}
+  .admin-list-row select{background:var(--void); border:1px solid var(--line); color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:11px; padding:5px 6px; border-radius:var(--radius);}
+  .del-btn{background:transparent; border:1px solid var(--alert); color:var(--alert); font-size:10px; padding:6px 9px; border-radius:var(--radius); cursor:pointer; letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap;}
+  .add-btn{
+    display:block; width:100%; background:var(--amber); border:none; color:var(--void); padding:13px;
+    font-family:'Oswald',sans-serif; letter-spacing:0.06em; text-transform:uppercase; font-size:13px;
+    cursor:pointer; border-radius:var(--radius); font-weight:600; margin-top:6px;
+  }
+  .add-btn:hover{background:#ff9f3d;}
 
   footer{text-align:center; font-size:10px; color:var(--amber-dim); margin-top:30px; letter-spacing:0.05em;}
 </style>
 </head>
 <body>
+
+<!-- ===== AUTH GATE ===== -->
+<div id="auth-gate">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <h1>OPERATOR<span>_</span>TERMINAL</h1>
+      <p>Sistema di requisizione loadout — meta Warzone corrente</p>
+    </div>
+
+    <!-- choice screen -->
+    <div class="auth-screen" id="auth-choice" style="display:block">
+      <div class="auth-card">
+        <h2>Accesso al terminale</h2>
+        <button class="auth-btn primary" onclick="showAuthScreen('login')">Accedi</button>
+        <button class="auth-btn" onclick="showAuthScreen('register')">Crea account</button>
+        <button class="auth-btn" onclick="enterGuest()">Continua come ospite</button>
+        <div class="auth-note">I dati account/preferiti restano salvati solo su questo dispositivo.</div>
+      </div>
+    </div>
+
+    <!-- login screen -->
+    <div class="auth-screen" id="auth-login">
+      <div class="auth-card">
+        <h2>Accedi</h2>
+        <div class="field">
+          <label>Nome utente</label>
+          <input type="text" id="login-username" autocomplete="off" autocapitalize="off">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password">
+        </div>
+        <div class="auth-error" id="login-error"></div>
+        <button class="auth-btn primary" onclick="doLogin()">Entra</button>
+        <div class="back-link" onclick="showAuthScreen('choice')">&larr; Torna indietro</div>
+      </div>
+    </div>
+
+    <!-- register screen -->
+    <div class="auth-screen" id="auth-register">
+      <div class="auth-card">
+        <h2>Crea account</h2>
+        <div class="field">
+          <label>Nome utente</label>
+          <input type="text" id="reg-username" autocomplete="off" autocapitalize="off">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="reg-password">
+        </div>
+        <div class="field">
+          <label>Codice amministratore (facoltativo)</label>
+          <input type="text" id="reg-admincode" autocomplete="off" autocapitalize="off">
+        </div>
+        <div class="auth-error" id="reg-error"></div>
+        <button class="auth-btn primary" onclick="doRegister()">Crea account</button>
+        <div class="back-link" onclick="showAuthScreen('choice')">&larr; Torna indietro</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP SHELL (hidden until login) ===== -->
+<div id="app-shell" style="display:none">
 
 <header>
   <div class="hdr-top">
@@ -157,9 +279,15 @@
   <div class="hdr-sub">Sistema di requisizione loadout — meta Warzone corrente</div>
 </header>
 
+<div id="operator-bar">
+  <span id="operator-status"></span>
+  <button id="logout-btn" onclick="logout()">Esci</button>
+</div>
+
 <div class="switch">
   <button id="btn-quiz" class="active" onclick="setMode('quiz')">Assistente AI</button>
   <button id="btn-armory" onclick="setMode('armory')">Armeria</button>
+  <button id="btn-admin" onclick="setMode('admin')" style="display:none">Admin</button>
 </div>
 
 <main>
@@ -177,12 +305,24 @@
     <div class="grid" id="armory-grid"></div>
   </section>
 
+  <!-- ===== ADMIN VIEW ===== -->
+  <section id="view-admin" class="view">
+    <div id="admin-content"></div>
+  </section>
+
   <div id="result-slot"></div>
 
   <footer>DATI COSTRUITI SU META COMMUNITY — VERIFICA SEMPRE LE PATCH NOTE IN-GAME</footer>
 </main>
 
+</div><!-- /app-shell -->
+
 <script>
+/* ============ ADMIN SECRET ============ */
+/* Cambia questa stringa con un codice segreto a tua scelta.
+   Chi si registra inserendo questo codice nel campo "Codice amministratore" diventa admin. */
+const ADMIN_SECRET = "Zaverixer-WZ26!";
+
 /* ============ WEAPON DATABASE — Warzone Season 4 (giugno 2026) ============ */
 const WEAPONS = {
   carbon57: {
@@ -369,6 +509,105 @@ const WEAPONS = {
   }
 };
 
+/* ============ STORAGE HELPERS (locali sul dispositivo) ============ */
+function simpleHash(str){
+  let hash = 0;
+  for(let i=0;i<str.length;i++){
+    hash = (hash<<5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash.toString(36);
+}
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem('wz_users')||'{}'); }catch(e){ return {}; } }
+function saveUsers(u){ localStorage.setItem('wz_users', JSON.stringify(u)); }
+function loadFavs(username){ try{ return JSON.parse(localStorage.getItem('wz_favs_'+username)||'[]'); }catch(e){ return []; } }
+function saveFavs(username, arr){ localStorage.setItem('wz_favs_'+username, JSON.stringify(arr)); }
+function loadCustomWeapons(){ try{ return JSON.parse(localStorage.getItem('wz_custom')||'{}'); }catch(e){ return {}; } }
+function saveCustomWeapons(o){ localStorage.setItem('wz_custom', JSON.stringify(o)); }
+function loadTierOverrides(){ try{ return JSON.parse(localStorage.getItem('wz_tiers')||'{}'); }catch(e){ return {}; } }
+function saveTierOverrides(o){ localStorage.setItem('wz_tiers', JSON.stringify(o)); }
+
+function getAllWeapons(){
+  const custom = loadCustomWeapons();
+  const overrides = loadTierOverrides();
+  const merged = Object.assign({}, WEAPONS, custom);
+  Object.keys(merged).forEach(k=>{
+    if(overrides[k]) merged[k] = Object.assign({}, merged[k], {tier: overrides[k]});
+  });
+  return merged;
+}
+
+/* ============ AUTH ============ */
+let currentUser = null; // {username, isAdmin, isGuest}
+
+function showAuthScreen(name){
+  document.querySelectorAll('.auth-screen').forEach(s=>s.style.display='none');
+  document.getElementById('auth-'+name).style.display='block';
+  document.getElementById('login-error').textContent='';
+  document.getElementById('reg-error').textContent='';
+}
+
+function doRegister(){
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const code = document.getElementById('reg-admincode').value.trim();
+  const errEl = document.getElementById('reg-error');
+  if(!username || !password){ errEl.textContent='Inserisci nome utente e password.'; return; }
+  const users = loadUsers();
+  if(users[username]){ errEl.textContent='Nome utente già in uso su questo dispositivo.'; return; }
+  const isAdmin = ADMIN_SECRET.length>0 && code === ADMIN_SECRET;
+  users[username] = { hash: simpleHash(password), isAdmin };
+  saveUsers(users);
+  localStorage.setItem('wz_current', username);
+  enterApp(username, isAdmin, false);
+}
+
+function doLogin(){
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const users = loadUsers();
+  if(!users[username] || users[username].hash !== simpleHash(password)){
+    errEl.textContent='Credenziali non valide su questo dispositivo.';
+    return;
+  }
+  localStorage.setItem('wz_current', username);
+  enterApp(username, users[username].isAdmin, false);
+}
+
+function enterGuest(){
+  enterApp('Ospite', false, true);
+}
+
+function enterApp(username, isAdmin, isGuest){
+  currentUser = {username, isAdmin, isGuest};
+  document.getElementById('auth-gate').style.display='none';
+  document.getElementById('app-shell').style.display='block';
+  document.getElementById('btn-admin').style.display = isAdmin ? 'block' : 'none';
+  updateOperatorBar();
+  setMode('quiz');
+}
+
+function logout(){
+  localStorage.removeItem('wz_current');
+  currentUser = null;
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('reg-username').value='';
+  document.getElementById('reg-password').value='';
+  document.getElementById('reg-admincode').value='';
+  showAuthScreen('choice');
+  document.getElementById('auth-gate').style.display='block';
+}
+
+function updateOperatorBar(){
+  const el = document.getElementById('operator-status');
+  let label = currentUser.isGuest ? 'OSPITE' : currentUser.username.toUpperCase();
+  let badge = currentUser.isAdmin ? '<span class="badge">ADMIN</span>' : '';
+  el.innerHTML = `OPERATORE: <b>${label}</b>${badge}`;
+}
+
 /* ============ QUIZ LOGIC ============ */
 const QUESTIONS = [
   {
@@ -466,22 +705,16 @@ function showQuizResult(){
   document.getElementById('progress').innerHTML = '';
   document.getElementById('step-label').textContent = 'REQUISIZIONE COMPLETATA';
 
-  // score all weapons against collected tags
   const allTags = Object.values(quizAnswers).flat();
+  const weapons = getAllWeapons();
   let best = null, bestScore = -1;
-  Object.entries(WEAPONS).forEach(([key,w])=>{
+  Object.entries(weapons).forEach(([key,w])=>{
     let score = 0;
-    w.tags.forEach(t=>{ if(allTags.includes(t)) score++; });
+    (w.tags||[]).forEach(t=>{ if(allTags.includes(t)) score++; });
     if(score > bestScore){ bestScore = score; best = key; }
   });
 
-  renderSlip(best, true);
-
-  const restart = document.createElement('button');
-  restart.className = 'restart';
-  restart.textContent = 'Rifai il questionario';
-  restart.onclick = restartQuiz;
-  document.getElementById('result-slot').appendChild(restart);
+  showResult(best, true);
 }
 
 /* ============ ARMORY LOGIC ============ */
@@ -493,15 +726,25 @@ const FILTERS = [
   {key:"Mitragliatrice (LMG)", label:"LMG"}
 ];
 let activeFilter = "all";
+let showFavsOnly = false;
 
 function renderFilters(){
   const f = document.getElementById('filters');
-  f.innerHTML = FILTERS.map(fl =>
+  let html = FILTERS.map(fl =>
     `<button class="${fl.key===activeFilter?'active':''}" onclick="setFilter('${fl.key}')">${fl.label}</button>`
   ).join('');
+  if(currentUser && !currentUser.isGuest){
+    html += `<button class="${showFavsOnly?'active':''}" onclick="toggleFavsOnly()">&#9733; Preferiti</button>`;
+  }
+  f.innerHTML = html;
 }
 function setFilter(k){
   activeFilter = k;
+  renderFilters();
+  renderArmory();
+}
+function toggleFavsOnly(){
+  showFavsOnly = !showFavsOnly;
   renderFilters();
   renderArmory();
 }
@@ -509,12 +752,16 @@ function setFilter(k){
 function renderArmory(){
   const grid = document.getElementById('armory-grid');
   grid.innerHTML = '';
-  Object.entries(WEAPONS).forEach(([key,w])=>{
+  const weapons = getAllWeapons();
+  const favs = (currentUser && !currentUser.isGuest) ? loadFavs(currentUser.username) : [];
+  Object.entries(weapons).forEach(([key,w])=>{
     if(activeFilter !== "all" && w.cat !== activeFilter) return;
+    if(showFavsOnly && !favs.includes(key)) return;
     const card = document.createElement('div');
     card.className = 'tag-card';
-    card.onclick = ()=>{ clearResult(); renderSlip(key, false); document.getElementById('result-slot').scrollIntoView({behavior:'smooth', block:'start'}); };
+    card.onclick = ()=>{ showResult(key, false); document.getElementById('result-slot').scrollIntoView({behavior:'smooth', block:'start'}); };
     card.innerHTML = `
+      ${favs.includes(key) ? '<div class="favmark">&#9733;</div>' : ''}
       <div class="tier">${w.tier}</div>
       <div class="cat">${w.cat}</div>
       <div class="name">${w.name}</div>
@@ -525,18 +772,55 @@ function renderArmory(){
 }
 
 /* ============ SLIP RENDERING (shared) ============ */
+let lastSlipKey = null;
+let lastSlipFromQuiz = false;
+
 function clearResult(){
   document.getElementById('result-slot').innerHTML = '';
 }
 
+function showResult(key, fromQuiz){
+  lastSlipKey = key;
+  lastSlipFromQuiz = fromQuiz;
+  clearResult();
+  renderSlip(key, fromQuiz);
+  if(fromQuiz){
+    const restart = document.createElement('button');
+    restart.className = 'restart';
+    restart.textContent = 'Rifai il questionario';
+    restart.onclick = restartQuiz;
+    document.getElementById('result-slot').appendChild(restart);
+  }
+}
+
+function toggleFav(key){
+  if(!currentUser || currentUser.isGuest) return;
+  let favs = loadFavs(currentUser.username);
+  if(favs.includes(key)){ favs = favs.filter(k=>k!==key); }
+  else { favs.push(key); }
+  saveFavs(currentUser.username, favs);
+  showResult(lastSlipKey, lastSlipFromQuiz);
+  if(document.getElementById('view-armory').classList.contains('active')) renderArmory();
+}
+
 function renderSlip(key, fromQuiz){
-  const w = WEAPONS[key];
+  const weapons = getAllWeapons();
+  const w = weapons[key];
+  if(!w) return;
   const slot = document.getElementById('result-slot');
   const slip = document.createElement('div');
   slip.className = 'slip';
   const why = fromQuiz
     ? "In base alle tue risposte, questa è l'arma che meglio si adatta al tuo stile di gioco nel meta corrente."
     : "Loadout attuale per questa arma, secondo il meta della Stagione 4.";
+
+  let favBtnHtml = '';
+  if(currentUser && !currentUser.isGuest){
+    const favs = loadFavs(currentUser.username);
+    const isFav = favs.includes(key);
+    favBtnHtml = `<button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${key}')">${isFav ? '&#9733; Salvato nei preferiti' : '&#9734; Salva nei preferiti'}</button>`;
+  }
+
   slip.innerHTML = `
     <div class="slip-head">
       <div class="label">Ordine di requisizione</div>
@@ -557,24 +841,171 @@ function renderSlip(key, fromQuiz){
         <div class="val">${w.secondary}</div>
       </div>
       <div class="note">${w.note}</div>
+      ${favBtnHtml}
     </div>
   `;
   slot.appendChild(slip);
+}
+
+/* ============ ADMIN PANEL ============ */
+function slugify(name){
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'_')
+    .replace(/^_+|_+$/g,'');
+}
+
+function renderAdminPanel(){
+  const el = document.getElementById('admin-content');
+  const custom = loadCustomWeapons();
+  const overrides = loadTierOverrides();
+  const weapons = getAllWeapons();
+  const users = loadUsers();
+
+  const catOptions = FILTERS.filter(f=>f.key!=='all').map(f=>`<option value="${f.key}">${f.label}</option>`).join('');
+
+  let html = `
+    <div class="admin-section">
+      <h3>Aggiungi nuova arma</h3>
+      <div class="admin-hint">Un attacco per riga nel formato "Slot: Componente" (es. "Optic: FANG HoverPoint ELO").</div>
+      <div class="field"><label>Nome arma</label><input type="text" id="adm-name"></div>
+      <div class="field"><label>Categoria</label><select id="adm-cat">${catOptions}</select></div>
+      <div class="field"><label>Tier</label>
+        <select id="adm-tier"><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
+      </div>
+      <div class="field"><label>Range (es. close / mid / long / sniper)</label><input type="text" id="adm-range"></div>
+      <div class="field"><label>Descrizione breve</label><textarea id="adm-blurb"></textarea></div>
+      <div class="field"><label>Attacchi (uno per riga)</label><textarea id="adm-attach" placeholder="Muzzle: Compensator&#10;Barrel: Short Barrel"></textarea></div>
+      <div class="field"><label>Arma secondaria consigliata</label><input type="text" id="adm-secondary"></div>
+      <div class="field"><label>Nota tattica</label><textarea id="adm-note"></textarea></div>
+      <div class="field"><label>Tag per l'assistente AI (separati da virgola)</label><input type="text" id="adm-tags" placeholder="close, aggressive, mobility"></div>
+      <button class="add-btn" onclick="addCustomWeapon()">Aggiungi arma all'armeria</button>
+    </div>
+
+    <div class="admin-section">
+      <h3>Armi aggiunte da te</h3>
+      <div class="admin-hint">Visibili solo su questo dispositivo.</div>
+      <div id="admin-custom-list">
+        ${Object.keys(custom).length === 0 ? '<div class="admin-hint">Nessuna arma personalizzata ancora.</div>' : Object.entries(custom).map(([key,w])=>`
+          <div class="admin-list-row">
+            <div class="an">${w.name}</div>
+            <button class="del-btn" onclick="deleteCustomWeapon('${key}')">Elimina</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Utenti registrati</h3>
+      <div class="admin-hint">Solo gli account creati su questo stesso dispositivo. Gli account creati da altri telefoni non compaiono qui.</div>
+      <div id="admin-users-list">
+        ${Object.keys(users).length === 0 ? '<div class="admin-hint">Nessun utente registrato su questo dispositivo.</div>' : Object.entries(users).map(([uname,u])=>`
+          <div class="admin-list-row">
+            <div class="an">${uname}${u.isAdmin ? ' <span class="badge" style="margin-left:6px;">ADMIN</span>' : ''}${(currentUser && currentUser.username===uname) ? ' <span style="color:var(--amber-dim);">(tu)</span>' : ''}</div>
+            ${(currentUser && currentUser.username===uname) ? '' : `<button class="del-btn" onclick="deleteUser('${uname}')">Elimina</button>`}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Modifica tier armi esistenti</h3>
+      <div class="admin-hint">Cambia rapidamente il tier di qualsiasi arma per adattarlo alle patch.</div>
+      <div id="admin-tier-list">
+        ${Object.entries(weapons).map(([key,w])=>`
+          <div class="admin-list-row">
+            <div class="an">${w.name}</div>
+            <select onchange="setTierOverride('${key}', this.value)">
+              ${['S','A','B','C'].map(t=>`<option value="${t}" ${w.tier===t?'selected':''}>${t}</option>`).join('')}
+            </select>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  el.innerHTML = html;
+}
+
+function addCustomWeapon(){
+  const name = document.getElementById('adm-name').value.trim();
+  if(!name){ alert("Inserisci almeno il nome dell'arma."); return; }
+  const cat = document.getElementById('adm-cat').value;
+  const tier = document.getElementById('adm-tier').value;
+  const range = document.getElementById('adm-range').value.trim();
+  const blurb = document.getElementById('adm-blurb').value.trim();
+  const attachLines = document.getElementById('adm-attach').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  const attachments = attachLines.map(l=>{
+    const idx = l.indexOf(':');
+    if(idx===-1) return [l, ''];
+    return [l.slice(0,idx).trim(), l.slice(idx+1).trim()];
+  });
+  const secondary = document.getElementById('adm-secondary').value.trim();
+  const note = document.getElementById('adm-note').value.trim();
+  const tags = document.getElementById('adm-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+
+  let key = slugify(name);
+  const existing = getAllWeapons();
+  if(existing[key]) key = key + '_' + Date.now().toString(36).slice(-4);
+
+  const custom = loadCustomWeapons();
+  custom[key] = {name, cat, tier, range, blurb, attachments, secondary, note, tags};
+  saveCustomWeapons(custom);
+
+  ['adm-name','adm-range','adm-blurb','adm-attach','adm-secondary','adm-note','adm-tags'].forEach(id=>document.getElementById(id).value='');
+  renderAdminPanel();
+  renderArmory();
+}
+
+function deleteCustomWeapon(key){
+  const custom = loadCustomWeapons();
+  delete custom[key];
+  saveCustomWeapons(custom);
+  renderAdminPanel();
+  renderArmory();
+}
+
+function deleteUser(username){
+  if(!confirm(`Eliminare l'utente "${username}"? Verranno rimossi anche i suoi preferiti salvati.`)) return;
+  const users = loadUsers();
+  delete users[username];
+  saveUsers(users);
+  localStorage.removeItem('wz_favs_'+username);
+  renderAdminPanel();
+}
+
+function setTierOverride(key, tier){
+  const overrides = loadTierOverrides();
+  overrides[key] = tier;
+  saveTierOverrides(overrides);
+  renderArmory();
 }
 
 /* ============ MODE SWITCH ============ */
 function setMode(mode){
   document.getElementById('btn-quiz').classList.toggle('active', mode==='quiz');
   document.getElementById('btn-armory').classList.toggle('active', mode==='armory');
+  document.getElementById('btn-admin').classList.toggle('active', mode==='admin');
   document.getElementById('view-quiz').classList.toggle('active', mode==='quiz');
   document.getElementById('view-armory').classList.toggle('active', mode==='armory');
+  document.getElementById('view-admin').classList.toggle('active', mode==='admin');
   clearResult();
   if(mode === 'quiz'){ restartQuiz(); }
-  if(mode === 'armory'){ renderFilters(); renderArmory(); }
+  if(mode === 'armory'){ activeFilter='all'; showFavsOnly=false; renderFilters(); renderArmory(); }
+  if(mode === 'admin'){ renderAdminPanel(); }
 }
 
 /* ============ INIT ============ */
-renderQuestion();
+(function init(){
+  const saved = localStorage.getItem('wz_current');
+  if(saved){
+    const users = loadUsers();
+    if(users[saved]){
+      enterApp(saved, users[saved].isAdmin, false);
+      return;
+    }
+  }
+  showAuthScreen('choice');
+})();
 </script>
 </body>
 </html>
