@@ -748,10 +748,14 @@ const FILTERS = [
 let activeFilter = "all";
 let showFavsOnly = false;
 
+function jsEscape(s){
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
 function renderFilters(){
   const f = document.getElementById('filters');
   let html = FILTERS.map(fl =>
-    `<button class="${fl.key===activeFilter?'active':''}" onclick="setFilter('${fl.key}')">${fl.label}</button>`
+    `<button class="${fl.key===activeFilter?'active':''}" onclick="setFilter('${jsEscape(fl.key)}')">${fl.label}</button>`
   ).join('');
   if(currentUser && !currentUser.isGuest){
     html += `<button class="${showFavsOnly?'active':''}" onclick="toggleFavsOnly()">&#9733; Preferiti</button>`;
@@ -1112,7 +1116,7 @@ function renderAdminPanel(){
         ${Object.keys(users).length === 0 ? '<div class="admin-hint">Nessun utente registrato su questo dispositivo.</div>' : Object.entries(users).map(([uname,u])=>`
           <div class="admin-list-row">
             <div class="an">${uname}${u.isAdmin ? ' <span class="badge" style="margin-left:6px;">ADMIN</span>' : ''}${(currentUser && currentUser.username===uname) ? ' <span style="color:var(--amber-dim);">(tu)</span>' : ''}</div>
-            ${(currentUser && currentUser.username===uname) ? '' : `<button class="del-btn" onclick="deleteUser('${uname}')">Elimina</button>`}
+            ${(currentUser && currentUser.username===uname) ? '' : `<button class="del-btn" onclick="deleteUser('${jsEscape(uname)}')">Elimina</button>`}
           </div>
         `).join('')}
       </div>
