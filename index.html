@@ -287,6 +287,7 @@
 <div class="switch">
   <button id="btn-quiz" class="active" onclick="setMode('quiz')">Assistente AI</button>
   <button id="btn-armory" onclick="setMode('armory')">Armeria</button>
+  <button id="btn-loadout" onclick="setMode('loadout')">Loadout</button>
   <button id="btn-admin" onclick="setMode('admin')" style="display:none">Admin</button>
 </div>
 
@@ -303,6 +304,11 @@
   <section id="view-armory" class="view">
     <div class="filters" id="filters"></div>
     <div class="grid" id="armory-grid"></div>
+  </section>
+
+  <!-- ===== LOADOUT BUILDER VIEW ===== -->
+  <section id="view-loadout" class="view">
+    <div id="loadout-content"></div>
   </section>
 
   <!-- ===== ADMIN VIEW ===== -->
@@ -847,6 +853,196 @@ function renderSlip(key, fromQuiz){
   slot.appendChild(slip);
 }
 
+/* ============ LOADOUT BUILDER (disponibile per tutti, anche ospiti) ============ */
+const PERKS = ["Ghost","Overkill","Fast Hands","Battle Hardened","Tempered","Combat Specialist","Double Time","Cold-Blooded","High Alert","Survivor","E.O.D.","Amped"];
+const LETALI = ["Frag Grenade","Semtex","C4","Thermite","Drill Charge","Throwing Knife","Molotov"];
+const TATTICI = ["Stun Grenade","Flash Grenade","Smoke Grenade","Heartbeat Sensor","Decoy Grenade","Gas Grenade"];
+const KILLSTREAK = ["UAV","Counter UAV","Cluster Strike","Precision Airstrike","Sentry Gun","Chopper Gunner","Munitions Box"];
+
+function weaponOptions(selectedKey){
+  const weapons = getAllWeapons();
+  const byCat = {};
+  Object.entries(weapons).forEach(([key,w])=>{
+    if(!byCat[w.cat]) byCat[w.cat] = [];
+    byCat[w.cat].push([key,w]);
+  });
+  return Object.entries(byCat).map(([cat, list])=>`
+    <optgroup label="${cat}">
+      ${list.map(([key,w])=>`<option value="${key}" ${key===selectedKey?'selected':''}>${w.name} (${w.tier})</option>`).join('')}
+    </optgroup>
+  `).join('');
+}
+function simpleOptions(list, selected){
+  return list.map(v=>`<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('');
+}
+
+function loadSavedLoadouts(){
+  if(!currentUser || currentUser.isGuest) return [];
+  try{ return JSON.parse(localStorage.getItem('wz_loadouts_'+currentUser.username)||'[]'); }catch(e){ return []; }
+}
+function saveSavedLoadouts(arr){
+  if(!currentUser || currentUser.isGuest) return;
+  localStorage.setItem('wz_loadouts_'+currentUser.username, JSON.stringify(arr));
+}
+
+function renderLoadoutBuilder(){
+  const el = document.getElementById('loadout-content');
+  const weapons = getAllWeapons();
+  const firstKey = Object.keys(weapons)[0];
+  const secondKey = Object.keys(weapons)[1] || firstKey;
+  const saved = loadSavedLoadouts();
+
+  let html = `
+    <div class="admin-section">
+      <h3>Crea il tuo loadout</h3>
+      <div class="admin-hint">Tutte le armi attualmente in armeria sono selezionabili, comprese quelle aggiunte dall'admin.</div>
+
+      <div class="field"><label>Arma primaria</label><select id="lo-primary">${weaponOptions(firstKey)}</select></div>
+      <div class="field"><label>Arma secondaria</label><select id="lo-secondary">${weaponOptions(secondKey)}</select></div>
+
+      <div class="field"><label>Perk 1</label><select id="lo-perk1">${simpleOptions(PERKS, PERKS[0])}</select></div>
+      <div class="field"><label>Perk 2</label><select id="lo-perk2">${simpleOptions(PERKS, PERKS[1])}</select></div>
+      <div class="field"><label>Perk 3</label><select id="lo-perk3">${simpleOptions(PERKS, PERKS[2])}</select></div>
+
+      <div class="field"><label>Letale</label><select id="lo-lethal">${simpleOptions(LETALI, LETALI[0])}</select></div>
+      <div class="field"><label>Tattico</label><select id="lo-tactical">${simpleOptions(TATTICI, TATTICI[0])}</select></div>
+      <div class="field"><label>Killstreak</label><select id="lo-killstreak">${simpleOptions(KILLSTREAK, KILLSTREAK[0])}</select></div>
+
+      ${(currentUser && !currentUser.isGuest) ? `
+        <div class="field"><label>Nome del loadout (per salvarlo)</label><input type="text" id="lo-name" placeholder="Es. Push aggressivo Resurgence"></div>
+      ` : `<div class="admin-hint">Accedi o crea un account per poter salvare i tuoi loadout personalizzati.</div>`}
+
+      <button class="add-btn" onclick="generateCustomLoadout()">Genera scheda loadout</button>
+      ${(currentUser && !currentUser.isGuest) ? `<button class="add-btn" style="background:transparent;border:1px solid var(--amber);color:var(--amber);margin-top:8px;" onclick="saveCurrentLoadout()">Salva questo loadout</button>` : ``}
+    </div>
+
+    ${(currentUser && !currentUser.isGuest) ? `
+      <div class="admin-section">
+        <h3>I tuoi loadout salvati</h3>
+        <div id="saved-loadout-list">
+          ${saved.length === 0 ? '<div class="admin-hint">Nessun loadout salvato ancora.</div>' : saved.map((l,i)=>`
+            <div class="admin-list-row">
+              <div class="an">${l.name}</div>
+              <div style="display:flex; gap:6px;">
+                <button class="del-btn" style="border-color:var(--amber); color:var(--amber);" onclick="applySavedLoadout(${i})">Carica</button>
+                <button class="del-btn" onclick="deleteSavedLoadout(${i})">Elimina</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ``}
+  `;
+  el.innerHTML = html;
+}
+
+function readLoadoutForm(){
+  return {
+    primary: document.getElementById('lo-primary').value,
+    secondary: document.getElementById('lo-secondary').value,
+    perks: [
+      document.getElementById('lo-perk1').value,
+      document.getElementById('lo-perk2').value,
+      document.getElementById('lo-perk3').value
+    ],
+    lethal: document.getElementById('lo-lethal').value,
+    tactical: document.getElementById('lo-tactical').value,
+    killstreak: document.getElementById('lo-killstreak').value
+  };
+}
+
+function generateCustomLoadout(){
+  const data = readLoadoutForm();
+  renderCustomLoadoutSlip(data);
+  document.getElementById('result-slot').scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+function renderCustomLoadoutSlip(data){
+  clearResult();
+  const weapons = getAllWeapons();
+  const primary = weapons[data.primary];
+  const secondary = weapons[data.secondary];
+  const slot = document.getElementById('result-slot');
+  const slip = document.createElement('div');
+  slip.className = 'slip';
+  slip.innerHTML = `
+    <div class="slip-head">
+      <div class="label">Loadout personalizzato</div>
+      <div class="id">CREATO DALL'OPERATORE</div>
+    </div>
+    <div class="slip-body">
+      <div class="cat-line">Arma primaria</div>
+      <h2>${primary.name}</h2>
+      ${primary.attachments.map(a => `
+        <div class="attach-row">
+          <div class="slot">${a[0]}</div>
+          <div class="part">${a[1]}</div>
+        </div>
+      `).join('')}
+
+      <div class="sec-box">
+        <div class="lbl">Arma secondaria</div>
+        <div class="val">${secondary.name}</div>
+        ${secondary.attachments.map(a => `
+          <div class="attach-row">
+            <div class="slot">${a[0]}</div>
+            <div class="part">${a[1]}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="sec-box">
+        <div class="lbl">Perk</div>
+        <div class="val">${data.perks.join(' · ')}</div>
+      </div>
+
+      <div class="sec-box">
+        <div class="lbl">Equipaggiamento</div>
+        <div class="val">Letale: ${data.lethal}<br>Tattico: ${data.tactical}<br>Killstreak: ${data.killstreak}</div>
+      </div>
+    </div>
+  `;
+  slot.appendChild(slip);
+}
+
+function saveCurrentLoadout(){
+  if(!currentUser || currentUser.isGuest) return;
+  const nameEl = document.getElementById('lo-name');
+  const name = nameEl.value.trim();
+  if(!name){ alert('Dai un nome al tuo loadout prima di salvarlo.'); return; }
+  const data = readLoadoutForm();
+  data.name = name;
+  const saved = loadSavedLoadouts();
+  saved.push(data);
+  saveSavedLoadouts(saved);
+  nameEl.value = '';
+  renderLoadoutBuilder();
+  generateCustomLoadout();
+}
+
+function applySavedLoadout(index){
+  const saved = loadSavedLoadouts();
+  const data = saved[index];
+  if(!data) return;
+  renderLoadoutBuilder();
+  document.getElementById('lo-primary').value = data.primary;
+  document.getElementById('lo-secondary').value = data.secondary;
+  document.getElementById('lo-perk1').value = data.perks[0];
+  document.getElementById('lo-perk2').value = data.perks[1];
+  document.getElementById('lo-perk3').value = data.perks[2];
+  document.getElementById('lo-lethal').value = data.lethal;
+  document.getElementById('lo-tactical').value = data.tactical;
+  document.getElementById('lo-killstreak').value = data.killstreak;
+  renderCustomLoadoutSlip(data);
+}
+
+function deleteSavedLoadout(index){
+  const saved = loadSavedLoadouts();
+  saved.splice(index,1);
+  saveSavedLoadouts(saved);
+  renderLoadoutBuilder();
+}
+
 /* ============ ADMIN PANEL ============ */
 function slugify(name){
   return name.toLowerCase()
@@ -984,13 +1180,16 @@ function setTierOverride(key, tier){
 function setMode(mode){
   document.getElementById('btn-quiz').classList.toggle('active', mode==='quiz');
   document.getElementById('btn-armory').classList.toggle('active', mode==='armory');
+  document.getElementById('btn-loadout').classList.toggle('active', mode==='loadout');
   document.getElementById('btn-admin').classList.toggle('active', mode==='admin');
   document.getElementById('view-quiz').classList.toggle('active', mode==='quiz');
   document.getElementById('view-armory').classList.toggle('active', mode==='armory');
+  document.getElementById('view-loadout').classList.toggle('active', mode==='loadout');
   document.getElementById('view-admin').classList.toggle('active', mode==='admin');
   clearResult();
   if(mode === 'quiz'){ restartQuiz(); }
   if(mode === 'armory'){ activeFilter='all'; showFavsOnly=false; renderFilters(); renderArmory(); }
+  if(mode === 'loadout'){ renderLoadoutBuilder(); }
   if(mode === 'admin'){ renderAdminPanel(); }
 }
 
